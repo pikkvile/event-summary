@@ -13,6 +13,7 @@
 (defn flat-tickers [tickers]
   (->> (mapcat tickers-row2list tickers)
        (remove nil?)
+       (remove #(= % "Ticker"))
        (distinct)))
 
 (defn get-tickers [] (flat-tickers (read-tickers)))
