@@ -3,6 +3,7 @@
 (use 'dk.ative.docjure.spreadsheet)
 
 (use 'event-summary.tickers-xslx)
+(use 'event-summary.consumer)
 
 (defn -main [& args]
   (println "Extracting tickers from xlsx...")
