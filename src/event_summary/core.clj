@@ -8,4 +8,8 @@
 (defn -main [& args]
   (println "Extracting tickers from xlsx...")
   (let [tickers (get-tickers)]
-    (println "Done. Total tickers: " (count tickers))))
+    (println "Done. Total tickers: " (count tickers))
+    (println "Authorizing...")
+    (authorize)
+    (println "Done:")
+    ))
