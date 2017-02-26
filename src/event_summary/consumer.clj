@@ -28,7 +28,8 @@
       (def auth {:value auth-token :domain domain :path "/"}))))
 
 (defn get-events-tickers [event-id ticker]
-  (client/get (format events-tickers event-id ticker) {:as :json :headers (merge csrf uir)
+  (println (str "Retrieving analytics data for event " event-id " and symbol " symbol))
+  ((client/get (format events-tickers event-id ticker) {:as :json :headers (merge csrf uir)
     ; Have to set cookies manually, as cookie-store does not work as expected.
     ; Probably will get rid of it in future.
-    :cookies {:auth-token auth :JSESSIONID ((cookies/get-cookies cs) "JSESSIONID")}}))
+    :cookies {:auth-token auth :JSESSIONID ((cookies/get-cookies cs) "JSESSIONID")}}) :body))

@@ -4,6 +4,7 @@
 
 (use 'event-summary.tickers-xslx)
 (use 'event-summary.consumer)
+(use 'event-summary.db)
 
 (defn -main [& args]
   (println "Extracting tickers from xlsx...")
@@ -12,4 +13,10 @@
     (println "Authorizing...")
     (authorize)
     (println "Done:")
-    ))
+
+))
+
+(defn get-n-store [event-id, symbol]
+  (->> (get-events-tickers event-id symbol)
+       (adapt-rows)
+       (store)))
