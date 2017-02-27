@@ -1,6 +1,7 @@
 (ns event-summary.consumer
   (:require [clj-http.client :as client])
-  (:require [clj-http.cookies :as cookies]))
+  (:require [clj-http.cookies :as cookies])
+  (:require [cemerick.url :refer (url url-encode)]))
 
 (def domain "169.45.250.98")
 (def base (str "http://" domain ":3000"))
@@ -25,11 +26,13 @@
   (let [csrf-token (((client/get prepare (merge cfg {:as :json :headers host-referer})) :body) :csrf-token)]
     (def csrf {"X-CSRF-Token" csrf-token})
     (let [auth-token (((client/post login (merge cfg creds {:as :json :headers (merge tjson csrf)})) :body) :auth-token)]
-      (def auth {:value auth-token :domain domain :path "/"}))))
+      (def auth {:value (cemerick.url/url-encode auth-token) :domain domain :path "/"}))))
 
 (defn get-events-tickers [event-id ticker]
   (println (str "Retrieving analytics data for event " event-id " and symbol " ticker))
-  ((client/get (format events-tickers event-id ticker) {:as :json :headers (merge csrf uir)
-    ; Have to set cookies manually, as cookie-store does not work as expected.
-    ; Probably will get rid of it in future.
-    :cookies {:auth-token auth :JSESSIONID ((cookies/get-cookies cs) "JSESSIONID")}}) :body))
+  (let [response (client/get (format events-tickers event-id ticker) {:as :json :headers (merge csrf uir)
+    :throw-exceptions? false :cookies {:auth-token auth :JSESSIONID ((cookies/get-cookies cs) "JSESSIONID")}})]
+      (println (response :status))
+      (if (= (response :status) 200)
+        (response :body)
+        (println response :body))))

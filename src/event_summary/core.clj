@@ -6,18 +6,19 @@
 (use 'event-summary.consumer)
 (use 'event-summary.db)
 
-(def event-ids (range 43 45))
+(def event-ids (range 43 44))
 
 (defn all-pairs [tickers] (for [x event-ids y tickers] [x y]))
 
 (defn get-n-store [pair]
   (->> (get-events-tickers (pair 0) (pair 1))
+       (remove nil?)
        (adapt-rows)
        (store)))
 
 (defn -main [& args]
   (println "Extracting tickers from xlsx...")
-  (let [tickers (get-tickers)]
+  (let [tickers (sort (get-tickers))]
     (println "Done. Total tickers: " (count tickers))
     (println "Authorizing...")
     (authorize)

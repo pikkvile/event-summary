@@ -5,4 +5,5 @@
                  [clj-http "3.4.1"]
                  [cheshire "5.7.0"]
                  [org.clojure/java.jdbc "0.7.0-alpha1"]
-                 [org.postgresql/postgresql "9.4.1212"]])
+                 [org.postgresql/postgresql "9.4.1212"]
+                 [com.cemerick/url "0.1.1"]])
