@@ -21,3 +21,5 @@
 (defn adapt-rows [rows] (into [] (map adapt (filter  #(some? (% :symbol)) rows)))) ; what to do if :symbol is null?
 
 (defn store [rows] (j/insert-multi! pg-db :event_analytics rows))
+
+(defn cleanup [] (j/delete! pg-db :event_analytics []))
