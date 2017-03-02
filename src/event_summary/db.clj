@@ -18,8 +18,17 @@
   :laph (row :lower-average-peak-higher)
   :lapl (row :lower-average-peak-lower)})
 
+(defn to-values-vector [m] (map #(into [] (vals %)) m))
+
 (defn adapt-rows [rows] (into [] (map adapt (filter  #(some? (% :symbol)) rows)))) ; what to do if :symbol is null?
 
 (defn store [rows] (j/insert-multi! pg-db :event_analytics rows))
 
-(defn cleanup [] (j/delete! pg-db :event_analytics []))
+(defn cleanup [] (println "Cleaning the db...") (j/delete! pg-db :event_analytics []))
+
+(defn load-event-symbol-data [event-id symbol]
+  (j/query pg-db ["select * from event_analytics where event_id=? and symbol=? order by day" event-id symbol]))
+
+(defn load-symbols-for-event [event-id]
+  (flatten (map vals
+    (j/query pg-db ["select distinct symbol from event_analytics where event_id=? order by symbol" event-id]))))

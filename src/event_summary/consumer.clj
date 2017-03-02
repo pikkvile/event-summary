@@ -21,6 +21,7 @@
 (def auth)
 
 (defn authorize []
+  (println "Authorizing...")
   (client/get dashboard cfg)
   (client/post login (merge cfg creds {:headers tjson}))
   (let [csrf-token (((client/get prepare (merge cfg {:as :json :headers host-referer})) :body) :csrf-token)]
