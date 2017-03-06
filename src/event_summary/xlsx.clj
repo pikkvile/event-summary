@@ -3,7 +3,7 @@
 (use 'dk.ative.docjure.spreadsheet)
 
 (defn read-tickers []
-  (->> (load-workbook-from-resource "tickers.xslx")
+  (->> (load-workbook-from-resource "tickers.xlsx")
        (select-sheet "Table 1")
        (select-columns {:B :tb :C :tc :E :te})
        (remove nil?)))
