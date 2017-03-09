@@ -32,3 +32,5 @@
 (defn load-symbols-for-event [event-id]
   (flatten (map vals
     (j/query pg-db ["select distinct symbol from event_analytics where event_id=? order by symbol" event-id]))))
+
+(defn event-ids [] (map :event_id (j/query pg-db ["select distinct event_id from event_analytics"])))

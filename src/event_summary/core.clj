@@ -1,4 +1,6 @@
-(ns event-summary.core)
+(ns event-summary.core
+  (:require [clojure.tools.cli :refer [cli]])
+  (:gen-class))
 
 (use 'event-summary.xlsx)
 (use 'event-summary.consumer)
@@ -6,10 +8,7 @@
 
 (import 'java.util.concurrent.Executors)
 
-(def event-ids (range 44 45))
-(def pool (Executors/newFixedThreadPool 25))
-
-(defn all-pairs [tickers] (for [x event-ids y tickers] [x y]))
+(defn all-pairs [events tickers] (for [x events y tickers] [x y]))
 (defn slice [from to s] (->> s (take to) (drop from)))
 
 (defn get-n-store [pair]
@@ -18,15 +17,15 @@
        (adapt-rows)
        (store)))
 
-(defn pfetch []
+(def pool (Executors/newFixedThreadPool 25))
+(defn pfetch [events]
   (cleanup)
   (let [tickers (sort (get-tickers))]
     (authorize)
-    (.invokeAll pool (map #(fn [] (get-n-store %)) (all-pairs tickers)))
-    ))
+    (.invokeAll pool (map #(fn [] (get-n-store %)) (all-pairs events tickers)))))
 
 (defn abars [bars]
-  (let [highest-hp-bar (last (sort-by :hp bars))] ; TODO: 1 also compare by day 2 do not use last
+  (let [highest-hp-bar (last (sort-by :hp bars))]
     (if highest-hp-bar
     [(highest-hp-bar :hp) (highest-hp-bar :haph) (highest-hp-bar :hapl)] [nil nil nil])))
 
@@ -40,14 +39,25 @@
 
 (defn load-n-print [event-id]
   (try
-  (let [symbols (load-symbols-for-event event-id)]
-    (let [symbols-data (map #(load-event-symbol-data event-id %) symbols)]
-      (generate-output event-id (map aggregate symbols-data))))
-      (catch Exception e (.printStackTrace e))))
+    (let [symbols (load-symbols-for-event event-id)]
+      (let [symbols-data (map #(load-event-symbol-data event-id %) symbols)]
+        (generate-output event-id (map aggregate symbols-data))))
+        (catch Exception e (.printStackTrace e))))
 
 (defn summary []
-  (run! load-n-print event-ids))
+  (run! load-n-print (event-ids)))
 
 ; TODO: main should accept some args, then call pfetch with or without
 ; cleanup, and then summary... or just summary, if everything already fetched.
-(defn -main [& args] (println "tbd... try (pfetch) or (summary) in repl"))
+; Also it would be nice to write some comments and tests.
+(def parameters-spec ["-h" "--help"])
+(def help "Usage: es <options> mode")
+(defn -main [& args]
+  (let [[opts args banner] (cli args parameters-spec)]
+      (case (first args)
+        "fetch" (pfetch (range (Integer. (args 1)) (Integer. (args 2))))
+        "xlsx" (summary)
+        (println help)
+      )
+    )
+  )

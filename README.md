@@ -1,14 +1,7 @@
-# event-summary
+# Event Summary Tool
 
-A Clojure library designed to ... well, that part is up to you.
+This tool fetches event data and generate xsls sheets for each event with some aggregated info.
 
 ## Usage
 
-FIXME
-
-## License
-
-Copyright © 2017 FIXME
-
-Distributed under the Eclipse Public License either version 1.0 or (at
-your option) any later version.
+TODO

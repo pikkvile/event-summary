@@ -32,6 +32,7 @@
       (= 13 (.getColumn (.getAddress cell))))
     (>= (.getNumericCellValue cell) highlight-after)))
 (defn generate-output [event-id data]
+  (println (str "Generating xslx for event " event-id))
   (let [wb (create-workbook "Event Summary"
                             (into [["Symbol" "Bars 1-5" "Avg Peak Higher" "Avg Peak Lower"
                                         "Bars 6-10" "Avg Peak Higher" "Avg Peak Lower"
